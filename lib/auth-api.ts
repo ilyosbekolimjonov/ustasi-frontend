@@ -25,6 +25,7 @@ export type SignupPayload = {
   city?: string;
   region?: string;
   experienceText?: string;
+  experienceYears?: number;
   bio?: string;
   profileImageFile?: File | null;
 };
@@ -48,6 +49,11 @@ type SignupResponse = {
   user: AuthUser;
   message: string;
   verificationEmailSent: boolean;
+};
+
+type RefreshResponse = {
+  accessToken: string;
+  refreshToken: string;
 };
 
 type UploadResponse = {
@@ -83,6 +89,16 @@ export function resolveErrorMessage(payload: unknown, fallback: string) {
     typeof payload.message[0] === "string"
   ) {
     return payload.message[0];
+  }
+
+  if (
+    payload &&
+    typeof payload === "object" &&
+    "error" in payload &&
+    payload.error &&
+    typeof payload.error === "object"
+  ) {
+    return resolveErrorMessage(payload.error, fallback);
   }
 
   return fallback;
@@ -153,7 +169,11 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
   >(response);
 
   if (!response.ok || !json || typeof json !== "object") {
-    throw new Error("Email yoki parol noto'g'ri");
+    throw new Error(
+      response.status === 401
+        ? "Email yoki parol noto'g'ri"
+        : resolveErrorMessage(json, "Kirish amalga oshmadi."),
+    );
   }
 
   const user = "user" in json && json.user ? normalizeUser(json.user) : normalizeUser({});
@@ -162,6 +182,36 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
     accessToken: "accessToken" in json ? String(json.accessToken ?? "") : undefined,
     refreshToken: "refreshToken" in json ? String(json.refreshToken ?? "") : undefined,
     user,
+  };
+}
+
+export async function refreshAuthTokens(refreshToken: string): Promise<RefreshResponse> {
+  const response = await performFetch(
+    `${API_BASE_URL}/auth/refresh`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken }),
+    },
+  );
+
+  const json = await parseJson<Partial<RefreshResponse> | JsonObject>(response);
+
+  if (
+    !response.ok ||
+    !json ||
+    typeof json !== "object" ||
+    typeof json.accessToken !== "string" ||
+    typeof json.refreshToken !== "string"
+  ) {
+    throw new Error(resolveErrorMessage(json, "Sessiya muddati tugagan."));
+  }
+
+  return {
+    accessToken: json.accessToken,
+    refreshToken: json.refreshToken,
   };
 }
 
@@ -191,6 +241,7 @@ export async function signup(payload: SignupPayload): Promise<SignupResponse> {
         city: payload.city?.trim() || undefined,
         region: payload.region?.trim() || undefined,
         experienceText: payload.experienceText?.trim() || undefined,
+        experienceYears: payload.experienceYears,
         bio: payload.bio?.trim() || undefined,
         profileImageUrl,
       }),

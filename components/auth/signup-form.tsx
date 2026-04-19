@@ -28,7 +28,7 @@ export function SignupForm() {
   const [category, setCategory] = useState("");
   const [city, setCity] = useState("");
   const [region, setRegion] = useState("");
-  const [experienceText, setExperienceText] = useState("");
+  const [experienceYears, setExperienceYears] = useState("");
   const [bio, setBio] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -51,7 +51,9 @@ export function SignupForm() {
     if (isMaster) {
       if (!category.trim()) return "Qaysi yo'nalishda ishlashingizni kiriting.";
       if (!city.trim()) return "Shaharingizni kiriting.";
-      if (!experienceText.trim()) return "Tajriba ma'lumotingizni kiriting.";
+      const years = Number(experienceYears);
+      if (!experienceYears.trim() || !Number.isInteger(years)) return "Tajriba yilini raqam bilan kiriting.";
+      if (years < 0 || years > 30) return "Tajriba 0 dan 30 yilgacha bo'lishi kerak.";
       if (!bio.trim()) return "O'zingiz haqingizda qisqacha yozing.";
       if (!profileImageFile) return "Profil rasmi usta uchun majburiy.";
     }
@@ -82,7 +84,8 @@ export function SignupForm() {
         category: isMaster ? category : undefined,
         city: isMaster ? city : undefined,
         region: isMaster ? region : undefined,
-        experienceText: isMaster ? experienceText : undefined,
+        experienceText: isMaster ? `${Number(experienceYears)} yil tajriba` : undefined,
+        experienceYears: isMaster ? Number(experienceYears) : undefined,
         bio: isMaster ? bio : undefined,
         profileImageFile: isMaster ? profileImageFile : undefined,
       });
@@ -143,60 +146,65 @@ export function SignupForm() {
         </div>
       ) : (
         <form className="grid gap-5" onSubmit={handleSubmit}>
-          <div className="grid gap-5 sm:grid-cols-2">
-            <Field
-              id="full-name"
-              label="To'liq ism"
-              value={fullName}
-              onChange={setFullName}
-              placeholder="Ali Aliyev"
-            />
-            <Field
-              id="email"
-              label="Email"
-              type="email"
-              value={email}
-              onChange={setEmail}
-              placeholder="sizning@email.uz"
-            />
-            <UzPhoneField
-              label="Telefon"
-              value={phoneDigits}
-              onChange={setPhoneDigits}
-            />
-            <Field
-              id="password"
-              label="Parol"
-              type="password"
-              value={password}
-              onChange={setPassword}
-              placeholder="Kamida 8 ta belgi"
-            />
-            <Field
-              id="confirm-password"
-              label="Parolni tasdiqlang"
-              type="password"
-              value={confirmPassword}
-              onChange={setConfirmPassword}
-              placeholder="Parolni qayta kiriting"
-            />
-            <FileField
-              label={isMaster ? "Profil rasmi" : "Avatar (ixtiyoriy)"}
-              helperText={
-                isMaster
-                  ? "Rasm profilingizda ko'rinadi va mijozlarga ishonch beradi."
-                  : "Istasangiz profilingiz uchun rasm qo'shishingiz mumkin."
-              }
-              required={isMaster}
-              file={isMaster ? profileImageFile : avatarFile}
-              onChange={(file) => {
-                if (isMaster) {
-                  setProfileImageFile(file);
-                } else {
-                  setAvatarFile(file);
+          <div className="grid gap-5 lg:grid-cols-[0.96fr_1.04fr]">
+            <div className="grid content-start gap-5">
+              <Field
+                id="full-name"
+                label="To'liq ism"
+                value={fullName}
+                onChange={setFullName}
+                placeholder="Ali Aliyev"
+              />
+              <Field
+                id="email"
+                label="Email"
+                type="email"
+                value={email}
+                onChange={setEmail}
+                placeholder="sizning@email.uz"
+              />
+              <UzPhoneField
+                label="Telefon"
+                value={phoneDigits}
+                onChange={setPhoneDigits}
+              />
+            </div>
+
+            <div className="grid content-start gap-5">
+              <Field
+                id="password"
+                label="Parol"
+                type="password"
+                value={password}
+                onChange={setPassword}
+                placeholder="Kamida 8 ta belgi"
+              />
+              <Field
+                id="confirm-password"
+                label="Parolni tasdiqlang"
+                type="password"
+                value={confirmPassword}
+                onChange={setConfirmPassword}
+                placeholder="Parolni qayta kiriting"
+              />
+              <FileField
+                label={isMaster ? "Profil rasmi" : "Profil rasmi (ixtiyoriy)"}
+                helperText={
+                  isMaster
+                    ? "Rasm profilingizda ko'rinadi va mijozlarga ishonch beradi."
+                    : "Istasangiz profilingiz uchun rasm qo'shishingiz mumkin."
                 }
-              }}
-            />
+                required={isMaster}
+                file={isMaster ? profileImageFile : avatarFile}
+                onChange={(file) => {
+                  if (isMaster) {
+                    setProfileImageFile(file);
+                  } else {
+                    setAvatarFile(file);
+                  }
+                }}
+              />
+            </div>
           </div>
 
           {isMaster ? (
@@ -225,10 +233,21 @@ export function SignupForm() {
                 />
                 <Field
                   id="experience"
-                  label="Tajriba"
-                  value={experienceText}
-                  onChange={setExperienceText}
-                  placeholder="Masalan, 7 yil tajriba"
+                  label="Tajriba (yil)"
+                  type="number"
+                  min={0}
+                  max={30}
+                  value={experienceYears}
+                  onChange={(value) => {
+                    const digitsOnly = value.replace(/\D/g, "");
+                    if (!digitsOnly) {
+                      setExperienceYears("");
+                      return;
+                    }
+
+                    setExperienceYears(String(Math.min(Number(digitsOnly), 30)));
+                  }}
+                  placeholder="Masalan, 7"
                 />
               </div>
 
@@ -303,6 +322,8 @@ function Field({
   onChange,
   placeholder,
   type = "text",
+  min,
+  max,
 }: {
   id: string;
   label: string;
@@ -310,6 +331,8 @@ function Field({
   onChange: (value: string) => void;
   placeholder: string;
   type?: string;
+  min?: number;
+  max?: number;
 }) {
   return (
     <div className="grid gap-2">
@@ -319,6 +342,9 @@ function Field({
       <input
         id={id}
         type={type}
+        min={min}
+        max={max}
+        inputMode={type === "number" ? "numeric" : undefined}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         className="auth-input"

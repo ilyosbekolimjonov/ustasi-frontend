@@ -9,8 +9,10 @@ import {
   cancelServiceRequest,
   createServiceRequest,
   getServiceRequest,
+  listRegions,
   listMyServiceRequests,
   updateServiceRequest,
+  type Region,
   type ServiceRequest,
   type ServiceRequestPayload,
 } from "@/lib/dashboard-api";
@@ -34,6 +36,7 @@ function RequestsContent({ session }: { session: AuthSession }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [regions, setRegions] = useState<Region[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [mode, setMode] = useState<"create" | "edit">("create");
 
@@ -66,6 +69,29 @@ function RequestsContent({ session }: { session: AuthSession }) {
     void loadRequests();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.accessToken]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadRegions() {
+      try {
+        const regionItems = await listRegions({ limit: 100 });
+        if (!cancelled) {
+          setRegions(regionItems);
+        }
+      } catch {
+        if (!cancelled) {
+          setRegions([]);
+        }
+      }
+    }
+
+    void loadRegions();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function handleCreate(payload: ServiceRequestPayload) {
     setSubmitting(true);
@@ -118,7 +144,7 @@ function RequestsContent({ session }: { session: AuthSession }) {
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(420px,1.04fr)] xl:items-start">
+    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(420px,1.04fr)]">
       <DashboardCard className="min-w-0">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -253,6 +279,7 @@ function RequestsContent({ session }: { session: AuthSession }) {
               submitLabel="So'rov yaratish"
               busyLabel="Saqlanmoqda..."
               loading={submitting}
+              regions={regions}
               onSubmit={handleCreate}
             />
           ) : selectedRequest ? (
@@ -262,6 +289,7 @@ function RequestsContent({ session }: { session: AuthSession }) {
                 submitLabel="O'zgarishlarni saqlash"
                 busyLabel="Yangilanmoqda..."
                 loading={submitting}
+                regions={regions}
                 onSubmit={handleUpdate}
                 onCancel={() => {
                   setMode("create");

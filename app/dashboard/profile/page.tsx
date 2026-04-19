@@ -18,7 +18,7 @@ export default function ProfilePage() {
   return (
     <UserDashboardShell
       title="Profile"
-      description="Asosiy profilingizni yangilang: ism, telefon, avatar, manzil va hudud."
+      description="Asosiy profilingizni yangilang: ism, telefon, profil rasmi, manzil va viloyat."
     >
       {(session) => <ProfileContent session={session} />}
     </UserDashboardShell>
@@ -122,7 +122,7 @@ function ProfileContent({ session }: { session: AuthSession }) {
 
   return (
     <DashboardCard>
-      <div className="grid gap-6 lg:grid-cols-[0.36fr_0.64fr]">
+      <div className="grid items-start gap-6 lg:grid-cols-[0.36fr_0.64fr]">
         <div className="rounded-[1.6rem] bg-[rgba(255,250,242,0.86)] p-5">
           <div className="overflow-hidden rounded-[1.4rem] border border-[var(--border)] bg-white">
             {previewUrl ? (
@@ -134,7 +134,7 @@ function ProfileContent({ session }: { session: AuthSession }) {
             )}
           </div>
           <label className="button-secondary mt-4 w-full cursor-pointer text-sm">
-            Avatar yuklash
+            Profil rasmini yuklash
             <input
               type="file"
               accept="image/png,image/jpeg,image/webp"
@@ -154,13 +154,13 @@ function ProfileContent({ session }: { session: AuthSession }) {
           <Field label="Manzil" value={address} onChange={setAddress} />
 
           <div className="grid gap-2">
-            <label className="text-sm font-bold text-[var(--navy)]">Hudud</label>
+            <label className="text-sm font-bold text-[var(--navy)]">Viloyat</label>
             <select
               value={regionId}
               onChange={(event) => setRegionId(event.target.value)}
               className="auth-input"
             >
-              <option value="">Tanlanmagan</option>
+              <option value="">Viloyatni tanlang</option>
               {regions.map((region) => (
                 <option key={region.id} value={region.id}>
                   {region.nameUz}

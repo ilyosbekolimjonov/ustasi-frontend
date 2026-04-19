@@ -2,8 +2,14 @@ import {
   API_BASE_URL,
   parseJson,
   performFetch,
+  refreshAuthTokens,
   resolveErrorMessage,
 } from "./auth-api";
+import {
+  clearAuthSession,
+  readAuthSession,
+  writeAuthSession,
+} from "./auth-storage";
 
 export type PaginatedResponse<T> = {
   items: T[];
@@ -114,6 +120,23 @@ export type DashboardSummary = {
   suggestedMasters: MasterProfile[];
 };
 
+export type MasterDashboardSummary = {
+  profile: UserProfile;
+  openRequestCount: number;
+  claimedRequestCount: number;
+  latestClaimedRequests: Array<
+    Pick<ServiceRequest, "id" | "title" | "category" | "city" | "status"> & {
+      claimedAt: string | null;
+      updatedAt: string;
+    }
+  >;
+  latestOpenRequests: Array<
+    Pick<ServiceRequest, "id" | "title" | "category" | "city" | "status"> & {
+      createdAt: string;
+    }
+  >;
+};
+
 export type Product = {
   id: string;
   title: string;
@@ -210,6 +233,17 @@ export type UpdateProfilePayload = Partial<{
   regionId: string;
 }>;
 
+export type UpdateMasterProfilePayload = Partial<{
+  category: string;
+  city: string;
+  region: string;
+  bio: string;
+  experienceText: string;
+  experienceYears: number;
+  profileImageUrl: string;
+  isAvailable: boolean;
+}>;
+
 export type Region = {
   id: string;
   nameUz: string;
@@ -253,22 +287,69 @@ async function apiRequest<T>(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const response = await performFetch(`${API_BASE_URL}${path}`, {
+  let response = await performFetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers,
   });
 
+  if (response.status === 401 && token) {
+    const refreshedAccessToken = await refreshStoredSession();
+
+    if (refreshedAccessToken) {
+      headers.set("Authorization", `Bearer ${refreshedAccessToken}`);
+      response = await performFetch(`${API_BASE_URL}${path}`, {
+        ...init,
+        headers,
+      });
+    }
+  }
+
   const json = await parseJson<T | Record<string, unknown>>(response);
 
   if (!response.ok) {
+    if (response.status === 401) {
+      clearAuthSession();
+
+      if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+        window.location.assign("/login");
+      }
+    }
+
     throw new Error(resolveErrorMessage(json, "So'rovni bajarib bo'lmadi."));
   }
 
   return json as T;
 }
 
+async function refreshStoredSession() {
+  const session = readAuthSession();
+
+  if (!session?.refreshToken) {
+    return "";
+  }
+
+  try {
+    const tokens = await refreshAuthTokens(session.refreshToken);
+
+    writeAuthSession({
+      user: session.user,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    });
+
+    return tokens.accessToken;
+  } catch {
+    clearAuthSession();
+    return "";
+  }
+}
+
 export function getUserDashboardSummary(token: string) {
   return apiRequest<DashboardSummary>("/dashboard/user", {}, token);
+}
+
+export function getMasterDashboardSummary(token: string) {
+  return apiRequest<MasterDashboardSummary>("/dashboard/master", {}, token);
 }
 
 export function listMyServiceRequests(
@@ -324,6 +405,47 @@ export function listMasters(params?: Record<string, QueryValue>) {
 
 export function getMaster(idOrSlug: string) {
   return apiRequest<MasterProfile>(`/masters/${idOrSlug}`);
+}
+
+export function getOwnMasterProfile(token: string) {
+  return apiRequest<MasterProfile>("/masters/me", {}, token);
+}
+
+export function updateOwnMasterProfile(token: string, payload: UpdateMasterProfilePayload) {
+  return apiRequest<MasterProfile>(
+    "/masters/me",
+    {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    },
+    token,
+  );
+}
+
+export function listOpenServiceRequests(token: string, params?: Record<string, QueryValue>) {
+  return apiRequest<PaginatedResponse<ServiceRequest>>(
+    `/service-requests/open${buildQuery(params)}`,
+    {},
+    token,
+  );
+}
+
+export function listClaimedServiceRequests(token: string, params?: Record<string, QueryValue>) {
+  return apiRequest<PaginatedResponse<ServiceRequest>>(
+    `/service-requests/claimed/my${buildQuery(params)}`,
+    {},
+    token,
+  );
+}
+
+export function claimServiceRequest(token: string, id: string) {
+  return apiRequest<ServiceRequest>(
+    `/service-requests/${id}/claim`,
+    {
+      method: "POST",
+    },
+    token,
+  );
 }
 
 export function getCurrentUser(token: string) {

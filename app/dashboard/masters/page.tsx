@@ -66,7 +66,7 @@ function MastersContent({ session: _session }: { session: AuthSession }) {
   }
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+    <div className="grid items-start gap-5 xl:grid-cols-[1.05fr_0.95fr]">
       <DashboardCard>
         <div className="grid gap-3 md:grid-cols-[1.3fr_1fr_1fr_auto]">
           <FilterField label="Qidiruv" value={search} onChange={setSearch} placeholder="Ism yoki soha" />

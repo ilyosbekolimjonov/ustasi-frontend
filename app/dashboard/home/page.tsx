@@ -68,8 +68,8 @@ function DashboardHomeContent({ session }: { session: AuthSession }) {
   }
 
   return (
-    <div className="grid gap-5">
-      <div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
+    <div className="grid items-start gap-5 xl:grid-cols-[1.08fr_0.92fr]">
+      <div className="grid gap-5">
         <DashboardCard>
           <span className="eyebrow">Profil</span>
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -96,17 +96,6 @@ function DashboardHomeContent({ session }: { session: AuthSession }) {
         </DashboardCard>
 
         <DashboardCard>
-          <span className="eyebrow">Qisqa Holat</span>
-          <div className="mt-4 grid gap-3">
-            <SummaryItem label="Jami so'rovlar" value={String(data.requestCounts?.total ?? data.latestRequests.length)} />
-            <SummaryItem label="Ochiq so'rovlar" value={String(data.requestCounts?.open ?? 0)} />
-            <SummaryItem label="Yakunlangan" value={String(data.requestCounts?.completed ?? 0)} />
-          </div>
-        </DashboardCard>
-      </div>
-
-      <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
-        <DashboardCard>
           <div className="flex items-center justify-between gap-3">
             <div>
               <h3 className="text-xl font-bold text-[var(--navy)]">So'nggi so'rovlar</h3>
@@ -125,7 +114,7 @@ function DashboardHomeContent({ session }: { session: AuthSession }) {
                     <div>
                       <h4 className="text-lg font-bold text-[var(--navy)]">{request.title}</h4>
                       <p className="mt-1 text-sm text-[var(--muted)]">
-                        {request.category} • {request.city}
+                        {request.category} - {request.city}
                       </p>
                       <p className="mt-2 text-sm font-medium text-[var(--navy-soft)]">
                         {formatRequestBudget(request.budgetMin, request.budgetMax)}
@@ -162,6 +151,17 @@ function DashboardHomeContent({ session }: { session: AuthSession }) {
             </div>
           )}
         </DashboardCard>
+      </div>
+
+      <div className="grid gap-5">
+        <DashboardCard>
+          <span className="eyebrow">Qisqa Holat</span>
+          <div className="mt-4 grid gap-3">
+            <SummaryItem label="Jami so'rovlar" value={String(data.requestCounts?.total ?? data.latestRequests.length)} />
+            <SummaryItem label="Ochiq so'rovlar" value={String(data.requestCounts?.open ?? 0)} />
+            <SummaryItem label="Yakunlangan" value={String(data.requestCounts?.completed ?? 0)} />
+          </div>
+        </DashboardCard>
 
         <DashboardCard>
           <div className="flex items-center justify-between gap-3">
@@ -190,10 +190,10 @@ function DashboardHomeContent({ session }: { session: AuthSession }) {
                         {master.isAvailable ? <StatusBadge status="ACTIVE" /> : null}
                       </div>
                       <p className="mt-1 text-sm text-[var(--muted)]">
-                        {master.category} • {master.city}
+                        {master.category} - {master.city}
                       </p>
                       <p className="mt-2 text-sm text-[var(--navy-soft)]">
-                        Reyting: {master.ratingAverage.toFixed(1)} • Yakunlangan ishlar: {master.jobsCompletedCount}
+                        Reyting: {master.ratingAverage.toFixed(1)} - Yakunlangan ishlar: {master.jobsCompletedCount}
                       </p>
                       <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{master.experienceText}</p>
                     </div>
