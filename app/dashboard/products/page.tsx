@@ -57,7 +57,7 @@ function ProductsContent({ session }: { session: AuthSession }) {
   }
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+    <div className="grid items-start gap-5 xl:grid-cols-[1.05fr_0.95fr]">
       <DashboardCard>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="min-w-0 flex-1">

@@ -40,7 +40,7 @@ export function AuthShell({
         />
       </div>
 
-      <div className="section-shell flex min-h-[calc(100vh-2rem)] flex-col">
+      <div className="mx-auto flex w-full max-w-[1320px] flex-col">
         <div className="section-card flex items-center justify-between rounded-[1.75rem] px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
             <div className="relative h-11 w-11 overflow-hidden rounded-2xl bg-white/80 p-1.5">
@@ -65,8 +65,8 @@ export function AuthShell({
           </Link>
         </div>
 
-        <div className="mt-5 grid flex-1 gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <section className="soft-gradient relative overflow-hidden rounded-[2rem] border border-white/50 p-6 shadow-[0_24px_60px_rgba(23,32,51,0.12)] sm:p-8">
+        <div className="mt-5 grid items-start gap-6 lg:grid-cols-[minmax(320px,0.95fr)_minmax(0,1.05fr)] xl:gap-8">
+          <section className="soft-gradient relative self-start overflow-hidden rounded-[2rem] border border-white/50 p-6 shadow-[0_24px_60px_rgba(23,32,51,0.12)] sm:p-8">
             <div className="absolute inset-0">
               <Image
                 src="/hero.png"
@@ -76,7 +76,7 @@ export function AuthShell({
                 sizes="(min-width: 1024px) 40vw, 100vw"
               />
             </div>
-            <div className="relative flex h-full flex-col justify-between gap-8">
+            <div className="relative grid gap-8">
               <div>
                 <span className="eyebrow">{eyebrow}</span>
                 <h1 className="section-title mt-6 max-w-md text-5xl leading-none text-[var(--navy)] sm:text-6xl">
@@ -105,7 +105,7 @@ export function AuthShell({
             </div>
           </section>
 
-          <section className="section-card rounded-[2rem] px-5 py-6 sm:px-8 sm:py-8">
+          <section className="section-card w-full max-w-[780px] self-start justify-self-end rounded-[2rem] px-5 py-6 sm:px-8 sm:py-8">
             <span className="eyebrow">{eyebrow}</span>
             <h2 className="section-title mt-5 text-4xl leading-tight text-[var(--navy)] sm:text-5xl">
               {title}

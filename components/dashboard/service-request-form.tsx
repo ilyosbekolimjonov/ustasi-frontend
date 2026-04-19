@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { uploadPublicImage } from "@/lib/auth-api";
-import type { ServiceRequest, ServiceRequestPayload } from "@/lib/dashboard-api";
+import type { Region, ServiceRequest, ServiceRequestPayload } from "@/lib/dashboard-api";
 
 type PendingFile = {
   file: File;
@@ -15,6 +15,7 @@ type ServiceRequestFormProps = {
   submitLabel: string;
   busyLabel: string;
   loading?: boolean;
+  regions?: Region[];
   onSubmit: (payload: ServiceRequestPayload) => Promise<void>;
   onCancel?: () => void;
 };
@@ -28,6 +29,7 @@ export function ServiceRequestForm({
   submitLabel,
   busyLabel,
   loading = false,
+  regions = [],
   onSubmit,
   onCancel,
 }: ServiceRequestFormProps) {
@@ -114,7 +116,7 @@ export function ServiceRequestForm({
     setError("");
 
     if (!title.trim() || !description.trim() || !category.trim() || !city.trim()) {
-      setError("Sarlavha, tavsif, kategoriya va shaharni to'ldiring.");
+      setError("Sarlavha, tavsif, kategoriya va viloyatni to'ldiring.");
       return;
     }
 
@@ -160,12 +162,12 @@ export function ServiceRequestForm({
       <div className="grid gap-5 md:grid-cols-2">
         <Field label="Sarlavha" value={title} onChange={setTitle} placeholder="Masalan, Konditsioner ta'miri kerak" />
         <Field label="Kategoriya" value={category} onChange={setCategory} placeholder="Masalan, Elektrik" />
-        <Field label="Shahar" value={city} onChange={setCity} placeholder="Toshkent" />
+        <RegionField regions={regions} value={city} onChange={setCity} />
         <Field
           label="Manzil"
           value={addressText}
           onChange={setAddressText}
-          placeholder="Hudud yoki aniq manzil"
+          placeholder="Tuman, ko'cha yoki aniq manzil"
         />
         <Field
           label="Minimal budjet"
@@ -263,6 +265,41 @@ export function ServiceRequestForm({
         ) : null}
       </div>
     </form>
+  );
+}
+
+function RegionField({
+  regions,
+  value,
+  onChange,
+}: {
+  regions: Region[];
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  if (!regions.length) {
+    return (
+      <Field
+        label="Viloyat"
+        value={value}
+        onChange={onChange}
+        placeholder="Masalan, Toshkent shahri"
+      />
+    );
+  }
+
+  return (
+    <div className="grid gap-2">
+      <label className="text-sm font-bold text-[var(--navy)]">Viloyat</label>
+      <select value={value} onChange={(event) => onChange(event.target.value)} className="auth-input">
+        <option value="">Viloyatni tanlang</option>
+        {regions.map((region) => (
+          <option key={region.id} value={region.nameUz}>
+            {region.nameUz}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }
 

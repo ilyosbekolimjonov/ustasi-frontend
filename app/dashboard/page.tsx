@@ -8,6 +8,7 @@ import {
   clearAuthSession,
   getRoleDashboardPath,
   isUserDashboardRole,
+  isMasterDashboardRole,
   readAuthSession,
   type AuthSession,
 } from "@/lib/auth-storage";
@@ -26,6 +27,11 @@ export default function DashboardPage() {
 
     if (isUserDashboardRole(currentSession.user.role)) {
       router.replace("/dashboard/home");
+      return;
+    }
+
+    if (isMasterDashboardRole(currentSession.user.role)) {
+      router.replace("/dashboard/master/home");
       return;
     }
 

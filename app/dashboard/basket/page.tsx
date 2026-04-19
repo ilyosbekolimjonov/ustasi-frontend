@@ -73,7 +73,7 @@ function BasketContent({ session }: { session: AuthSession }) {
   }
 
   return (
-    <div className="grid gap-5">
+    <div className="grid content-start items-start gap-5">
       <DashboardCard>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -136,7 +136,7 @@ function BasketItemCard({
 
   return (
     <DashboardCard>
-      <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="grid items-start gap-5 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="flex gap-4">
           <img src={item.tool.image} alt="" className="h-24 w-24 rounded-[1.4rem] object-cover" />
           <div className="min-w-0 flex-1">

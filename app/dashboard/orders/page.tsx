@@ -65,7 +65,7 @@ function OrdersContent({ session }: { session: AuthSession }) {
   }
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+    <div className="grid items-start gap-5 xl:grid-cols-[1.05fr_0.95fr]">
       <DashboardCard>
         <h2 className="text-2xl font-bold text-[var(--navy)]">Buyurtmalar ro'yxati</h2>
         <p className="mt-1 text-sm text-[var(--muted)]">Yaratilgan buyurtmalar va ularning holati.</p>

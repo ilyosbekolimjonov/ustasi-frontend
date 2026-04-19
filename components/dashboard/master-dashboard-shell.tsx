@@ -7,7 +7,7 @@ import { startTransition, useEffect, useMemo, useState, type ReactNode } from "r
 import {
   clearAuthSession,
   getRoleDashboardPath,
-  isUserDashboardRole,
+  isMasterDashboardRole,
   readAuthSession,
   type AuthSession,
 } from "@/lib/auth-storage";
@@ -15,28 +15,24 @@ import {
 import { LoadingState } from "./dashboard-ui";
 
 const NAV_ITEMS = [
-  { href: "/dashboard/home", label: "Dashboard Home", caption: "Asosiy ko'rinish" },
-  { href: "/dashboard/requests", label: "My Requests", caption: "So'rovlarim" },
-  { href: "/dashboard/masters", label: "Masters", caption: "Ustalar" },
-  { href: "/dashboard/profile", label: "Profile", caption: "Profil" },
-  { href: "/dashboard/basket", label: "Basket", caption: "Savat" },
-  { href: "/dashboard/orders", label: "Orders", caption: "Buyurtmalar" },
-  { href: "/dashboard/products", label: "Products", caption: "Mahsulotlar" },
+  { href: "/dashboard/master/home", label: "Dashboard Home", caption: "Usta paneli" },
+  { href: "/dashboard/master/requests", label: "Requests", caption: "Ochiq so'rovlar" },
+  { href: "/dashboard/master/profile", label: "Profile", caption: "Usta profili" },
 ];
 
-type UserDashboardShellProps = {
+type MasterDashboardShellProps = {
   title: string;
   description: string;
   actions?: ReactNode;
   children: (session: AuthSession) => ReactNode;
 };
 
-export function UserDashboardShell({
+export function MasterDashboardShell({
   title,
   description,
   actions,
   children,
-}: UserDashboardShellProps) {
+}: MasterDashboardShellProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [session, setSession] = useState<AuthSession | null | undefined>(undefined);
@@ -49,7 +45,7 @@ export function UserDashboardShell({
       return;
     }
 
-    if (!isUserDashboardRole(nextSession.user.role)) {
+    if (!isMasterDashboardRole(nextSession.user.role)) {
       router.replace(getRoleDashboardPath(nextSession.user.role));
       return;
     }
@@ -58,7 +54,7 @@ export function UserDashboardShell({
   }, [router]);
 
   const activeLabel = useMemo(
-    () => NAV_ITEMS.find((item) => pathname?.startsWith(item.href))?.caption ?? "Dashboard",
+    () => NAV_ITEMS.find((item) => pathname?.startsWith(item.href))?.caption ?? "Usta paneli",
     [pathname],
   );
 
@@ -74,7 +70,7 @@ export function UserDashboardShell({
     return (
       <main className="page-shell min-h-screen px-4 py-6 sm:px-6 xl:px-8">
         <div className="mx-auto w-full max-w-[1320px]">
-          <LoadingState label="Dashboard tayyorlanmoqda..." />
+          <LoadingState label="Usta paneli tayyorlanmoqda..." />
         </div>
       </main>
     );
@@ -86,7 +82,7 @@ export function UserDashboardShell({
         <aside className="section-card flex self-start rounded-[2rem] p-5 xl:sticky xl:top-6 xl:min-h-[calc(100vh-3rem)] xl:flex-col">
           <div className="rounded-[1.25rem] bg-[rgba(255,250,242,0.86)] px-3 py-3">
             <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--amber-deep)]">
-              Ustasi Dashboard
+              Master Dashboard
             </p>
             <h2 className="mt-2 truncate text-lg font-bold text-[var(--navy)]">{session.user.fullName}</h2>
             <p className="mt-1 truncate text-xs text-[var(--muted)]">{session.user.phone || session.user.email}</p>
@@ -137,7 +133,7 @@ export function UserDashboardShell({
           <header className="section-card rounded-[2rem] px-6 py-6 sm:px-7">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
-                <span className="eyebrow">User Panel</span>
+                <span className="eyebrow">Master Panel</span>
                 <h1 className="section-title mt-4 text-4xl text-[var(--navy)] sm:text-5xl">
                   {title}
                 </h1>

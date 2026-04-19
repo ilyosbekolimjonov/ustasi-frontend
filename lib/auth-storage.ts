@@ -11,13 +11,26 @@ export type AuthSession = {
 };
 
 export const USER_DASHBOARD_ROLES: UstasiRole[] = ["USER", "USER_FIZ", "USER_YUR"];
+export const MASTER_DASHBOARD_ROLES: UstasiRole[] = ["MASTER"];
 
 export function isUserDashboardRole(role: UstasiRole | string | undefined | null): role is UstasiRole {
   return USER_DASHBOARD_ROLES.includes(role as UstasiRole);
 }
 
+export function isMasterDashboardRole(role: UstasiRole | string | undefined | null): role is UstasiRole {
+  return MASTER_DASHBOARD_ROLES.includes(role as UstasiRole);
+}
+
 export function getRoleDashboardPath(role: UstasiRole | string | undefined | null) {
-  return isUserDashboardRole(role) ? "/dashboard/home" : "/dashboard";
+  if (isUserDashboardRole(role)) {
+    return "/dashboard/home";
+  }
+
+  if (isMasterDashboardRole(role)) {
+    return "/dashboard/master/home";
+  }
+
+  return "/dashboard";
 }
 
 export function readAuthSession(): AuthSession | null {

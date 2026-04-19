@@ -11,7 +11,7 @@ export function Hero() {
   return (
     <section id="home" className="section-shell relative pt-6 pb-14 sm:pb-20">
       <div className="absolute inset-x-10 top-14 -z-10 h-60 rounded-full bg-[radial-gradient(circle,_rgba(243,166,35,0.2),_transparent_65%)] blur-3xl" />
-      <div className="grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14">
+      <div className="grid items-start gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14">
         <div className="relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-[linear-gradient(145deg,rgba(255,250,242,0.95),rgba(255,255,255,0.72))] px-6 py-8 shadow-[0_24px_60px_rgba(23,32,51,0.12)] sm:px-10 sm:py-12">
           <div className="absolute -top-10 right-4 h-28 w-28 rounded-full bg-[rgba(45,143,139,0.14)] blur-3xl" />
           <span className="eyebrow">Muammo bormi? Ustasi bor.</span>
