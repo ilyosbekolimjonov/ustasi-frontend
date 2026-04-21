@@ -17,7 +17,11 @@ import { LoadingState } from "./dashboard-ui";
 const NAV_ITEMS = [
   { href: "/dashboard/master/home", label: "Dashboard Home", caption: "Usta paneli" },
   { href: "/dashboard/master/requests", label: "Requests", caption: "Ochiq so'rovlar" },
+  { href: "/dashboard/master/chats", label: "Chats", caption: "Muloqotlar" },
   { href: "/dashboard/master/profile", label: "Profile", caption: "Usta profili" },
+  { href: "/dashboard/master/basket", label: "Basket", caption: "Savat" },
+  { href: "/dashboard/master/orders", label: "Orders", caption: "Buyurtmalar" },
+  { href: "/dashboard/master/products", label: "Products", caption: "Mahsulotlar" },
 ];
 
 type MasterDashboardShellProps = {
