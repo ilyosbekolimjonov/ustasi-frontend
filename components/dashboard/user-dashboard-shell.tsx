@@ -17,6 +17,7 @@ import { LoadingState } from "./dashboard-ui";
 const NAV_ITEMS = [
   { href: "/dashboard/home", label: "Dashboard Home", caption: "Asosiy ko'rinish" },
   { href: "/dashboard/requests", label: "My Requests", caption: "So'rovlarim" },
+  { href: "/dashboard/chats", label: "Chats", caption: "Muloqotlar" },
   { href: "/dashboard/masters", label: "Masters", caption: "Ustalar" },
   { href: "/dashboard/profile", label: "Profile", caption: "Profil" },
   { href: "/dashboard/basket", label: "Basket", caption: "Savat" },

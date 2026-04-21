@@ -70,6 +70,65 @@ export type ServiceRequest = {
   } | null;
 };
 
+export type ChatParticipant = {
+  id: string;
+  fullName: string;
+  phone: string;
+  avatarUrl: string | null;
+  role: string;
+  masterProfile: {
+    id: string;
+    slug: string;
+    category: string;
+    city: string;
+    profileImageUrl: string;
+  } | null;
+};
+
+export type ChatMessage = {
+  id: string;
+  senderId: string;
+  text: string;
+  createdAt: string;
+  readAt: string | null;
+  sender: {
+    id: string;
+    fullName: string;
+    avatarUrl: string | null;
+  };
+};
+
+export type ChatRequestSummary = {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  city: string;
+  addressText: string | null;
+  budgetMin: number | null;
+  budgetMax: number | null;
+  images: string[];
+  status: string;
+  claimedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ChatConversationSummary = {
+  id: string;
+  requestId: string;
+  createdAt: string;
+  updatedAt: string;
+  lastActivityAt: string;
+  request: ChatRequestSummary;
+  counterpart: ChatParticipant;
+  lastMessage: ChatMessage | null;
+};
+
+export type ChatConversationDetail = ChatConversationSummary & {
+  messages: ChatMessage[];
+};
+
 export type ServiceRequestPayload = {
   title: string;
   description: string;
@@ -243,6 +302,10 @@ export type UpdateMasterProfilePayload = Partial<{
   profileImageUrl: string;
   isAvailable: boolean;
 }>;
+
+export type SendChatMessagePayload = {
+  text: string;
+};
 
 export type Region = {
   id: string;
@@ -443,6 +506,29 @@ export function claimServiceRequest(token: string, id: string) {
     `/service-requests/${id}/claim`,
     {
       method: "POST",
+    },
+    token,
+  );
+}
+
+export function listChats(token: string) {
+  return apiRequest<ChatConversationSummary[]>('/chats', {}, token);
+}
+
+export function getChatConversation(token: string, conversationId: string) {
+  return apiRequest<ChatConversationDetail>(`/chats/${conversationId}`, {}, token);
+}
+
+export function sendChatMessage(
+  token: string,
+  conversationId: string,
+  payload: SendChatMessagePayload,
+) {
+  return apiRequest<ChatMessage>(
+    `/chats/${conversationId}/messages`,
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
     },
     token,
   );
